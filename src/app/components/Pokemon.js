@@ -48,9 +48,9 @@ export function Pokemon(props) {
         Show {isShiny ? "default" : "shiny"}
       </button>
       {isShiny ? (
-        <img className="w-44" src={props.pokemon?.sprites.other["official-artwork"].front_shiny} alt="show shiny artwork of the pokemon" />
+        <img className="w-44" src={props.pokemon?.sprites?.other["official-artwork"]?.front_shiny} alt="show shiny artwork of the pokemon" />
       ) : (
-        <img className="w-44" src={props.pokemon?.sprites.other["official-artwork"].front_default} alt="show default artwork of the pokemon" />
+        <img className="w-44" src={props.pokemon?.sprites?.other["official-artwork"]?.front_default} alt="show default artwork of the pokemon" />
       )}
       <span>
         {props.pokemon?.stats.map((stat, index) => (
