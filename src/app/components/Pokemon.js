@@ -1,73 +1,70 @@
 import { useState } from "react";
 
-export function Fetchapi(props) {
-  async function fetchIt(pokemonName) {
-    async function fetchPokemon(url) {
-      try {
-        const response = await fetch(url);
-        const result = await response.json();
-        return result;
-      } catch (error) {
-        throw "error";
-      }
-    }
-
-    const pokemon = await fetchPokemon(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
-    return pokemon;
+export async function fetchPokemon(pokemonName) {
+  try {
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    throw "error";
   }
-  const [inputValue, setInputValue] = useState("pikachu");
-
-  const handleInputChange = (event) => {
-    const inputValue = event.target.value;
-    setInputValue(inputValue);
-  };
-  const handleButtonClick = (event) => {
-    const pokemonApiInfo = fetchIt(inputValue);
-    console.log(pokemonApiInfo);
-  };
-  return (
-    <label>
-      Choose your pokemon:
-      <input className="m-2 text-black" type="text" value={inputValue} onChange={handleInputChange} />
-      <button className="btn bg-slate-500 border-gray-50 rounded-sm border p-2 m-2" onClick={handleButtonClick}>
-        Search pokemon
-      </button>
-    </label>
-  );
 }
 
 export function Pokemon(props) {
+  const generations = {
+    red: "First generation",
+    blue: "First generation",
+    yellow: "First generation",
+    gold: "Second generation",
+    silver: "Second generation",
+    crystal: "Second generation",
+    ruby: "Third generation",
+    sapphire: "Third generation",
+    emerald: "Third generation",
+    firered: "Third generation",
+    leafgreen: "Third generation",
+    diamond: "Fourth generation",
+    pearl: "Fourth generation",
+    platinum: "Fourth generation",
+    heartgold: "Fourth generation",
+    soulsilver: "Fourth generation",
+    black: "Fifth generation",
+    white: "Fifth generation",
+    "black-2": "Sixth generation",
+    "white-2": "Sixth generation",
+  };
   const [isShiny, setShiny] = useState(false);
   const handleShiny = () => {
     setShiny((prevValue) => !prevValue);
   };
-  const stats = props.stats;
-  const listStats = [];
-  for (let i in stats) {
-    listStats.push(
-      <p key={stats[i].stat.name}>
-        {stats[i].stat.name}: {stats[i].base_stat}
-      </p>
-    );
-  }
-  const types = props.types;
-  const listTypes = [];
-  for (let i in types) {
-    listTypes.push(<p key={types[i].type.name}>Type: {types[i].type.name}</p>);
-  }
   return (
     <div>
-      <h1 className="mt-2">{props.name}</h1>
+      <h1 className="mt-2 capitalize">{props.pokemon.name}</h1>
+      <p>{generations[props.pokemon.game_indices[0].version.name]}</p>
       <p>
-        Height: {props.height} Weight: {props.weight}
+        Height: {props.pokemon.height} Weight: {props.pokemon.weight}
       </p>
-      <button className="btn bg-slate-500 border-gray-50 rounded-sm border p-2" onClick={handleShiny}>
+      <button className="btn bg-red-500 border-gray-50 rounded-sm border p-2 my-2" onClick={handleShiny}>
         Show {isShiny ? "default" : "shiny"}
       </button>
-      {isShiny ? <img className="w-44" src={props.artworks.shiny} /> : <img className="w-44" src={props.artworks.default} />}
-      <span>{listStats}</span>
+      {isShiny ? (
+        <img className="w-44" src={props.pokemon.sprites.other["official-artwork"].front_shiny} alt="show shiny artwork of the pokemon" />
+      ) : (
+        <img className="w-44" src={props.pokemon.sprites.other["official-artwork"].front_default} alt="show default artwork of the pokemon" />
+      )}
+      <span>
+        {props.pokemon.stats.map((stat, index) => (
+          <p key={index}>
+            {stat.stat.name}: {stat.base_stat}
+          </p>
+        ))}
+      </span>
       <br />
-      <span>{listTypes}</span>
+      <span>
+        {props.pokemon.types.map((type, index) => (
+          <p key={index}>Type: {type.type.name}</p>
+        ))}
+      </span>
     </div>
   );
 }

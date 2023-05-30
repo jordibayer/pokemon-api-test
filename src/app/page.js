@@ -1,38 +1,52 @@
 "use client";
 import Image from "next/image";
-import { Pokemon, Fetchapi } from "./components/Pokemon";
+import { Pokemon, fetchPokemon } from "./components/Pokemon";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [pokemon, setPokemon] = useState();
+  const [inputValue, setInputValue] = useState("pikachu");
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  async function handleFetchPokemon() {
+    try {
+      if (!inputValue) return;
+      setIsError(false);
+      setIsLoading(true);
+      const pokemonApiInfo = await fetchPokemon(inputValue);
+      setPokemon(pokemonApiInfo);
+    } catch (error) {
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+  const handleInputChange = (event) => {
+    const inputValue = event.target.value;
+    setInputValue(inputValue);
+  };
+  const handleButtonClick = async () => {
+    await handleFetchPokemon();
+  };
+  useEffect(() => {
+    async function load() {
+      await handleFetchPokemon();
+    }
+    load();
+  }, []);
+
   return (
     <main className="p-2 m-2">
       <nav className="bg-red-500 text-center text-4xl p-2">POKETEST</nav>
-      <Fetchapi />
-      <Pokemon
-        name="Pikachu"
-        height="5"
-        weight="20"
-        id="16"
-        stats={{
-          0: { base_stat: "48", stat: { name: "hp" } },
-          1: { base_stat: "48", stat: { name: "attack" } },
-          2: { base_stat: "48", stat: { name: "defense" } },
-          3: { base_stat: "48", stat: { name: "special-attack" } },
-          4: { base_stat: "48", stat: { name: "special-defense" } },
-          5: { base_stat: "48", stat: { name: "speed" } },
-        }}
-        artworks={{
-          default: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/132.png",
-          shiny: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/132.png",
-        }}
-        types={{
-          0: {
-            slot: "1",
-            type: {
-              name: "normal",
-            },
-          },
-        }}
-      />
+      <label>
+        Choose your pokemon:
+        <input className="m-2 text-black" type="text" value={inputValue} onChange={handleInputChange} />
+        <button className="btn bg-red-500 border-gray-50 rounded-sm border p-2 my-2 disabled:bg-slate-500" disabled={!inputValue} onClick={handleButtonClick}>
+          Search pokemon
+        </button>
+      </label>
+      {isLoading ? <p>Loading pokemon...</p> : isError ? <p>Something went wrong (maybe you misstyped the pokemon?)</p> : pokemon && <Pokemon pokemon={pokemon} />}
     </main>
   );
 }
