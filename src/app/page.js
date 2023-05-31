@@ -31,10 +31,7 @@ export default function Home() {
     await handleFetchPokemon();
   };
   useEffect(() => {
-    async function load() {
-      await handleFetchPokemon();
-    }
-    load();
+    handleFetchPokemon();
   }, []);
 
   return (
